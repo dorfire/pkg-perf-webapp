@@ -2,29 +2,30 @@
 Sample app that run `pip install` in various directories to measure package download performance.
 '''
 import os, subprocess, shutil
+from os import path
 from flask import Flask, Response
 
 
 app = Flask(__name__)
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR = path.dirname(path.abspath(__file__))
 PIP_ROOT_DIR = '/tmp/pip'
-REQSET_DIR = os.path.join(APP_DIR, 'reqsets')
+REQSET_DIR = path.join(APP_DIR, 'reqsets')
 REQSET_EXT = '.txt'
 
 
 def isreqset(filename):
-	return os.path.isfile(os.path.join(REQSET_DIR, filename)) and filename.endswith(REQSET_EXT)
+	return path.isfile(path.join(REQSET_DIR, filename)) and filename.endswith(REQSET_EXT)
 
 
 def get_reqset_path(basename):
-	return os.path.join(REQSET_DIR, basename + REQSET_EXT)
+	return path.join(REQSET_DIR, basename + REQSET_EXT)
 
 
 @app.route('/')
 def index():
 	body = 'Navigate to /pipinstall/<reqset> to test download and installation times.\n\n'
-	body += 'Possible requirement sets:\n'
-	body += '\n'.join([' - ' + os.path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
+	body += 'Available requirement sets:\n'
+	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
 	return Response(body, mimetype='text/plain')
 
 
