@@ -61,19 +61,19 @@ def time_pip(reqset):
 
 	try:
 		reset_dir(PIP_ROOT_DIR)
-		body += 'Reset directory "{}"'.format(PIP_ROOT_DIR)
+		body += 'Reset directory "{}"\n'.format(PIP_ROOT_DIR)
 	except Exception as exc:
-		body += res('Could not reset pip root directory "{}":\n{}'.format(PIP_ROOT_DIR, exc))
+		body += 'Could not reset pip root directory "{}":\n{}\n'.format(PIP_ROOT_DIR, exc)
 
 	try:
-		body += run('whoami')
+		body += run('whoami') + '\n'
 	except Exception as exc:
-		body += res('Could not run whoami:\n{}'.format(exc))
+		body += 'Could not run whoami:\n{}\n'.format(exc)
 
 	try:
 		reqs_path = get_reqset_path(reqset)
 		body += run('time pip install -r {} --target {}'.format(reqs_path, PIP_ROOT_DIR))
 	except Exception as exc:
-		body += res('Could not time pip:\n{}'.format(exc))
+		body += 'Could not time pip:\n{}'.format(exc)
 
 	return res(body)
