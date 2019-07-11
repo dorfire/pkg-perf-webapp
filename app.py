@@ -34,9 +34,6 @@ def index():
 	
 	body += 'Environment:\n'
 	body += ' - {} = "{}"\n'.format('FLASK_DEBUG', os.environ['FLASK_DEBUG'])
-	body += ' - {} = "{}"\n'.format('os.getlogin()', os.getlogin())
-	if hasattr(os, 'getuid'):
-		body += ' - {} = "{}"\n'.format('os.getuid()', os.getuid())
 	body += ' - {} = "{}"\n'.format('APP_DIR', APP_DIR)
 	body += ' - {} = "{}"\n'.format('REQSET_DIR', REQSET_DIR)
 	
@@ -54,6 +51,10 @@ def reset_dir(path):
 	os.makedirs(path)
 
 
+def run(cmd):
+	return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+
+
 @app.route('/pipinstall/<reqset>')
 def time_pip(reqset):
 	try:
@@ -61,11 +62,17 @@ def time_pip(reqset):
 	except Exception as exc:
 		return res('Could not reset pip root directory "{}":\n{}'.format(PIP_ROOT_DIR, exc))
 
+	body = ''
+
+	try:
+		body += run('whoami')
+	except Exception as exc:
+		return res('Could not run whoami:\n{}'.format(exc))
+
 	try:
 		reqs_path = get_reqset_path(reqset)
-		pip_output = subprocess.check_output('time pip install -r {} --target {}'.format(reqs_path, PIP_ROOT_DIR),
-			stderr=subprocess.STDOUT, shell=True)
+		body += run('time pip install -r {} --target {}'.format(reqs_path, PIP_ROOT_DIR))
 	except Exception as exc:
 		return res('Could not time pip:\n{}'.format(exc))
 
-	return res(pip_output)
+	return res(body)
