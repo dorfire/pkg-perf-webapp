@@ -32,10 +32,10 @@ def index():
 	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
 	return res(body)
 
-@app.route('/timeout/<int:secs>')
+@app.route('/sleep/<int:secs>')
 def test_timeout(secs):
 	sleep(secs)
-	return res('Slept')
+	return res('Slept {} seconds'.format(secs))
 
 
 def reset_dir(path):
@@ -44,8 +44,8 @@ def reset_dir(path):
 
 
 @app.route('/pipinstall/<reqset>')
-def runpip(reqset):
+def time_pip(reqset):
 	reset_dir(PIP_ROOT_DIR)
 	reqs_path = get_reqset_path(reqset)
-	pip_output = subprocess.check_output(['pip', 'install', '-r', reqs_path, '--root', PIP_ROOT_DIR])
+	pip_output = subprocess.check_output(['time', 'pip', 'install', '-r', reqs_path, '--root', PIP_ROOT_DIR])
 	return res(pip_output)
