@@ -72,7 +72,7 @@ def time_pip(reqset):
 
 	try:
 		reqs_path = get_reqset_path(reqset)
-		body += run('time pip install -r {} --target {} --no-cache-dir'.format(reqs_path, PIP_ROOT_DIR))
+		body += run('time pip install -r {} --target {} --ignore-installed --no-cache-dir'.format(reqs_path, PIP_ROOT_DIR))
 	except Exception as exc:
 		body += 'Could not time pip:\n{}'.format(exc)
 
