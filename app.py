@@ -35,7 +35,8 @@ def index():
 	body += 'Environment:\n'
 	body += ' - {} = "{}"\n'.format('FLASK_DEBUG', os.environ['FLASK_DEBUG'])
 	body += ' - {} = "{}"\n'.format('os.getlogin()', os.getlogin())
-	body += ' - {} = {}\n'.format('os.getresuid()', os.getresuid())
+	if hasattr(os, 'getuid'):
+		body += ' - {} = "{}"\n'.format('os.getuid()', os.getuid())
 	body += ' - {} = "{}"\n'.format('APP_DIR', APP_DIR)
 	body += ' - {} = "{}"\n'.format('REQSET_DIR', REQSET_DIR)
 	
