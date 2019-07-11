@@ -33,7 +33,7 @@ def index():
 	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)]) + '\n\n'
 	
 	body += 'Environment:\n'
-	body += ' - {} = "{}"\n'.format('FLASK_DEBUG', os.environ['FLASK_DEBUG'])
+	body += ' - {} = "{}"\n'.format('FLASK_DEBUG', os.environ.get('FLASK_DEBUG'))
 	body += ' - {} = "{}"\n'.format('APP_DIR', APP_DIR)
 	body += ' - {} = "{}"\n'.format('REQSET_DIR', REQSET_DIR)
 	
