@@ -52,7 +52,7 @@ def reset_dir(path):
 
 
 def run(cmd):
-	return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+	return str(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True), 'utf-8')
 
 
 @app.route('/pipinstall/<reqset>')
