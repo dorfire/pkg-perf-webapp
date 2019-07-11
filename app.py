@@ -32,6 +32,7 @@ def index():
 	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
 	return res(body)
 
+
 @app.route('/sleep/<int:secs>')
 def test_timeout(secs):
 	sleep(secs)
