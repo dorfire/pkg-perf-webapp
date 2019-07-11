@@ -56,8 +56,12 @@ def time_pip(reqset):
 	try:
 		reset_dir(PIP_ROOT_DIR)
 	except Exception as exc:
-		return res('Could not reset pip root directory "{}": {}'.format(PIP_ROOT_DIR, exc))
+		return res('Could not reset pip root directory "{}":\n{}'.format(PIP_ROOT_DIR, exc))
 
-	reqs_path = get_reqset_path(reqset)
-	pip_output = subprocess.check_output(['time', 'pip', 'install', '-r', reqs_path, '--target', PIP_ROOT_DIR])
+	try:
+		reqs_path = get_reqset_path(reqset)
+		pip_output = subprocess.check_output(['time', 'pip', 'install', '-r', reqs_path, '--target', PIP_ROOT_DIR])
+	except Exception as exc:
+		return res('Could not time pip:\n{}'.format(exc))
+
 	return res(pip_output)
