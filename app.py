@@ -53,7 +53,11 @@ def reset_dir(path):
 
 @app.route('/pipinstall/<reqset>')
 def time_pip(reqset):
-	reset_dir(PIP_ROOT_DIR)
+	try:
+		reset_dir(PIP_ROOT_DIR)
+	except Exception as exc:
+		return res('Could not reset pip root directory "{}": {}'.format(PIP_ROOT_DIR, exc))
+
 	reqs_path = get_reqset_path(reqset)
 	pip_output = subprocess.check_output(['time', 'pip', 'install', '-r', reqs_path, '--target', PIP_ROOT_DIR])
 	return res(pip_output)
