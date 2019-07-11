@@ -60,7 +60,8 @@ def time_pip(reqset):
 
 	try:
 		reqs_path = get_reqset_path(reqset)
-		pip_output = subprocess.check_output(['time', 'pip', 'install', '-r', reqs_path, '--target', PIP_ROOT_DIR], shell=True)
+		pip_output = subprocess.check_output('time pip install -r {} --target {}'.format(reqs_path, PIP_ROOT_DIR),
+			stderr=subprocess.STDOUT, shell=True)
 	except Exception as exc:
 		return res('Could not time pip:\n{}'.format(exc))
 
