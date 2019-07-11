@@ -28,8 +28,15 @@ def get_reqset_path(basename):
 @app.route('/')
 def index():
 	body = 'Navigate to /pipinstall/<reqset> to test download and installation times.\n\n'
+	
 	body += 'Available requirement sets:\n'
-	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
+	body += '\n'.join([' - ' + path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)]) + '\n\n'
+	
+	body += 'Environment:\n'
+	body += ' - {} = "{}"\n'.format('FLASK_DEBUG', os.environ['FLASK_DEBUG'])
+	body += ' - {} = "{}"\n'.format('APP_DIR', APP_DIR)
+	body += ' - {} = "{}"\n'.format('REQSET_DIR', REQSET_DIR)
+	
 	return res(body)
 
 
