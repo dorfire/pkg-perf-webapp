@@ -7,7 +7,7 @@ from time import sleep
 from flask import Flask, Response
 
 
-app = Flask(__name__)
+app = Flask(__name__) # Debug enabled through env var FLASK_DEBUG=1
 APP_DIR = path.dirname(path.abspath(__file__))
 PIP_ROOT_DIR = '/tmp/pip'
 REQSET_DIR = path.join(APP_DIR, 'reqsets')
