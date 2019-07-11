@@ -24,7 +24,7 @@ def get_reqset_path(basename):
 def index():
 	body = 'Navigate to /pipinstall/<reqset> to test download and installation times.\n\n'
 	body += 'Possible requirement sets:\n'
-	body += '\n'.join([' - ' + os.path.basename(name) for name in os.listdir(REQSET_DIR) if isreqset(name)])
+	body += '\n'.join([' - ' + os.path.splitext(name)[0] for name in os.listdir(REQSET_DIR) if isreqset(name)])
 	return Response(body, mimetype='text/plain')
 
 
