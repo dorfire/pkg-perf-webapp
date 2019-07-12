@@ -1,3 +1,3 @@
-# py-pkg-perf-webapp
+# pkg-perf-webapp
 
-Runs `pip install -r ...` with an arbitrary set of packages, while timing the operation.
+Runs `pip install ...` or `npm install ...`, with an arbitrary set of packages, while timing the operation.
