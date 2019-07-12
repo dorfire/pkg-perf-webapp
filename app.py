@@ -66,11 +66,6 @@ def time_pip(reqset):
 		body += 'Could not reset pip root directory "{}":\n{}\n'.format(PIP_ROOT_DIR, exc)
 
 	try:
-		body += run('whoami') + '\n'
-	except Exception as exc:
-		body += 'Could not run whoami:\n{}\n'.format(exc)
-
-	try:
 		reqs_path = get_reqset_path(reqset)
 		body += run('time pip install -r {} --target {} --ignore-installed --no-cache-dir'.format(reqs_path, PIP_ROOT_DIR))
 	except Exception as exc:
