@@ -14,13 +14,13 @@ NPM_REQSET_DIR = path.join(APP_DIR, 'npm_reqsets')
 
 @app.route('/')
 def index():
-	body = 'Navigate to /pip-install/<reqset> or /npm-install/<reqset> to test download and installation times.\n\n'
+	body = 'Navigate to /pip-install/<reqset> or /npm-install/<reqset> to test download and installation times.\n\n\n'
 	
 	body += 'Available pip requirement sets:\n'
 	body += '\n'.join([' - ' + name for name in get_available_reqsets(PIP_REQSET_DIR)]) + '\n\n'
 	
 	body += 'Available npm requirement sets:\n'
-	body += '\n'.join([' - ' + name for name in get_available_reqsets(NPM_REQSET_DIR)]) + '\n\n'
+	body += '\n'.join([' - ' + name for name in get_available_reqsets(NPM_REQSET_DIR)]) + '\n\n\n'
 	
 	body += 'Environment:\n'
 	body += ' - {} = "{}"\n'.format('APP_DIR', APP_DIR)
