@@ -62,11 +62,11 @@ def time_pip(reqset):
 def time_npm(reqset):
 	body = ''
 
-	# Install npm if needed
+	# Install node + npm if needed
 	if run('which npm').returncode != 0:
-		install_npm_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
-		body += '{}:\n'.format(install_npm_cmd)
-		body += run(install_npm_cmd).output + '\n\n'
+		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
+		body += '{}:\n'.format(install_node_cmd)
+		body += run(install_node_cmd).output + '\n\n'
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	node_modules_path = path.join(app_path, 'node_modules')
