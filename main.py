@@ -63,7 +63,7 @@ def time_npm(reqset):
 	body = ''
 
 	if request.args.get('install') == 'true':
-		install_npm_cmd = 'apt-get install nodejs -y && curl -L https://npmjs.org/install.sh | sh'
+		install_npm_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
 		body += '{}:\n'.format(install_npm_cmd)
 		try:
 			body += run(install_npm_cmd) + '\n\n'
