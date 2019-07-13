@@ -1,12 +1,17 @@
+import os, subprocess, shutil
+from os import path
 from flask import Response
 
+
+REQSET_EXT = '.txt'
 
 def res(body):
 	return Response(body, mimetype='text/plain')
 
 
 def isreqset(dirname: str, filename: str) -> bool:
-	return path.isfile(path.join(dirname, filename)) and filename.endswith(REQSET_EXT)
+	filepath = path.join(dirname, filename)
+	return path.isdir(filepath) or (path.isfile(filepath) and filename.endswith(REQSET_EXT))
 
 
 def get_reqset_path(dirname: str, basename: str):
@@ -22,5 +27,5 @@ def reset_dir(path):
 	os.makedirs(path)
 
 
-def run(cmd):
-	return str(subprocess.check_output(['/bin/bash', '-c', cmd], stderr=subprocess.STDOUT, shell=False), 'utf-8')
+def run(cmd, workdir=None):
+	return str(subprocess.check_output(['/bin/bash', '-c', cmd], stderr=subprocess.STDOUT, shell=False, cwd=workdir), 'utf-8')

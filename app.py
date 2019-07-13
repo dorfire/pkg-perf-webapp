@@ -1,17 +1,15 @@
 '''
 Sample app that run `pip install` in various directories to measure package download performance.
 '''
-import os, subprocess, shutil
 from os import path
 from time import sleep
-from flask import Flask; app = Flask(__name__)
+from flask import Flask, request; app = Flask(__name__)
 from utils import *
 
 
 APP_DIR = path.dirname(path.abspath(__file__))
 PIP_REQSET_DIR = path.join(APP_DIR, 'pip_reqsets')
 NPM_REQSET_DIR = path.join(APP_DIR, 'npm_reqsets')
-REQSET_EXT = '.txt'
 
 
 @app.route('/')
@@ -40,37 +38,41 @@ def test_timeout(secs):
 	return res('Slept {} seconds'.format(secs))
 
 
-@app.route('/pip-install/<reqset>')
-def time_pip(reqset):
+def time_pkg_install(root_dir, reqset, cmd_fmt, workdir=None):
 	body = ''
 
-	prefix = path.join(PIP_ROOT_DIR, reqset)
-	try:
+	prefix = path.join(root_dir, reqset)
+	os.chdir(prefix)
+
+	if request.args.get('reset') == 'true':
 		reset_dir(prefix)
-		body += 'Reset directory "{}"\n'.format(prefix)
-	except Exception as exc:
-		body += 'Could not reset pip root directory "{}":\n{}\n'.format(prefix, exc)
+		body += 'Directory "{}" was reset\n'.format(prefix)
 
 	try:
 		reqs_path = get_reqset_path(reqset)
-		body += run('time pip install -r {} --target {} --ignore-installed --no-cache-dir'.format(reqs_path, prefix))
+		body += run('time ' + cmd_fmt.format(reqs_path, prefix), workdir)
 	except Exception as exc:
-		body += 'Could not time pip:\n{}'.format(exc)
+		body += 'Could not time installation:\n{}'.format(exc)
 
 	return res(body)
+
+
+@app.route('/pip-install/<reqset>')
+def time_pip(reqset):
+	return time_pkg_install(PIP_ROOT_DIR, reqset, 'pip install -r {} --target {} --ignore-installed --no-cache-dir')
 
 
 @app.route('/npm-install/<reqset>')
 def time_npm(reqset):
-	# npm install bower -g --prefix ./vendor/node_modules
-	body = ''
+
+	return time_pkg_install(NPM_ROOT_DIR, reqset, 'pip install -r {} --target {} --ignore-installed --no-cache-dir', )
+
 
 	prefix = path.join(PIP_ROOT_DIR, reqset)
-	try:
+
+	if request.args.get('reset') == 'true':
 		reset_dir(prefix)
 		body += 'Reset directory "{}"\n'.format(prefix)
-	except Exception as exc:
-		body += 'Could not reset pip root directory "{}":\n{}\n'.format(prefix, exc)
 
 	try:
 		reqs_path = get_reqset_path(reqset)
@@ -79,3 +81,7 @@ def time_npm(reqset):
 		body += 'Could not time pip:\n{}'.format(exc)
 
 	return res(body)
+
+
+if __name__ == '__main__':
+	app.run()
