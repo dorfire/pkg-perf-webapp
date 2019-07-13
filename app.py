@@ -38,47 +38,41 @@ def test_timeout(secs):
 	return res('Slept {} seconds'.format(secs))
 
 
-def time_pkg_install(root_dir, reqset, cmd_fmt, workdir=None):
+@app.route('/pip-install/<reqset>')
+def time_pip(reqset):
 	body = ''
 
-	prefix = path.join(root_dir, reqset)
-	os.chdir(prefix)
+	app_path = path.join(PIP_REQSET_DIR, reqset)
+	pip_prefix = path.join(app_path, 'pip')
 
 	if request.args.get('reset') == 'true':
-		reset_dir(prefix)
-		body += 'Directory "{}" was reset\n'.format(prefix)
+		reset_dir(pip_prefix)
+		body += 'Directory "{}" was reset\n'.format(pip_prefix)
 
 	try:
-		reqs_path = get_reqset_path(reqset)
-		body += run('time ' + cmd_fmt.format(reqs_path, prefix), workdir)
+		reqs_path = path.join(app_path, 'requirements.txt')
+		body += run('time pip install -r {} --target {} {}'.format(reqs_path, pip_prefix, '--ignore-installed --no-cache-dir' if request.args.get('nocache') == 'true' else ''))
 	except Exception as exc:
 		body += 'Could not time installation:\n{}'.format(exc)
 
 	return res(body)
 
 
-@app.route('/pip-install/<reqset>')
-def time_pip(reqset):
-	return time_pkg_install(PIP_ROOT_DIR, reqset, 'pip install -r {} --target {} --ignore-installed --no-cache-dir')
-
-
 @app.route('/npm-install/<reqset>')
 def time_npm(reqset):
+	body = ''
 
-	return time_pkg_install(NPM_ROOT_DIR, reqset, 'pip install -r {} --target {} --ignore-installed --no-cache-dir', )
-
-
-	prefix = path.join(PIP_ROOT_DIR, reqset)
+	app_path = path.join(NPM_REQSET_DIR, reqset)
+	node_modules_path = path.join(app_path, 'node_modules')
 
 	if request.args.get('reset') == 'true':
-		reset_dir(prefix)
-		body += 'Reset directory "{}"\n'.format(prefix)
+		reset_dir(node_modules_path)
+		body += 'Directory "{}" was reset\n'.format(node_modules_path)
 
 	try:
-		reqs_path = get_reqset_path(reqset)
-		body += run('time pip install -r {} --target {} --ignore-installed --no-cache-dir'.format(reqs_path, prefix))
+		body += run('time npm install', app_path)
 	except Exception as exc:
-		body += 'Could not time pip:\n{}'.format(exc)
+		body += 'Could not time installation:\n{}'.format(exc)
 
 	return res(body)
 

@@ -9,17 +9,8 @@ def res(body):
 	return Response(body, mimetype='text/plain')
 
 
-def isreqset(dirname: str, filename: str) -> bool:
-	filepath = path.join(dirname, filename)
-	return path.isdir(filepath) or (path.isfile(filepath) and filename.endswith(REQSET_EXT))
-
-
-def get_reqset_path(dirname: str, basename: str):
-	return path.join(dirname, basename + REQSET_EXT)
-
-
 def get_available_reqsets(reqset_dir):
-	return [path.splitext(name)[0] for name in os.listdir(reqset_dir) if isreqset(reqset_dir, name)]
+	return [path.splitext(name)[0] for name in os.listdir(reqset_dir) if path.isdir(path.join(reqset_dir, name))]
 
 
 def reset_dir(path):
