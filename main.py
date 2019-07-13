@@ -65,7 +65,10 @@ def time_npm(reqset):
 	if request.args.get('install') == 'true':
 		install_npm_cmd = 'apt-get install nodejs'
 		body += '{}:\n'.format(install_npm_cmd)
-		body += run(install_npm_cmd) + '\n\n'
+		try:
+			body += run(install_npm_cmd) + '\n\n'
+		except Exception as exc:
+			body += 'Could not instal npm:\n{}'.format(exc)
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	node_modules_path = path.join(app_path, 'node_modules')
