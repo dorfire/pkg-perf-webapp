@@ -1,9 +1,12 @@
 import os, subprocess, shutil
 from os import path
 from flask import Response
+from typing import NamedTuple
 
 
+DEFAULT_OUTPUT_ENCODING = 'utf-8'
 REQSET_EXT = '.txt'
+
 
 def res(body):
 	return Response(body, mimetype='text/plain')
@@ -18,5 +21,14 @@ def reset_dir(path):
 	os.makedirs(path)
 
 
+class RunResult(NamedTuple):
+	returncode: int
+	output: str
+
+
 def run(cmd, workdir=None):
-	return str(subprocess.check_output(['/bin/bash', '-c', cmd], stderr=subprocess.STDOUT, shell=False, cwd=workdir), 'utf-8')
+	try:
+		output = subprocess.check_output(['/bin/bash', '-c', cmd], stderr=subprocess.STDOUT, shell=False, cwd=workdir)
+		return RunResult(0, str(output, DEFAULT_OUTPUT_ENCODING))
+	except subprocess.CalledProcessError as exc:
+		return RunResult(exc.returncode, str(exc.output, DEFAULT_OUTPUT_ENCODING))

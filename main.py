@@ -1,5 +1,6 @@
 '''
-Sample app that run `pip install` in various directories to measure package download performance.
+Sample app that run `pip install`/`npm install` in various directories,
+to measure package download performance.
 '''
 from os import path
 from time import sleep
@@ -49,11 +50,10 @@ def time_pip(reqset):
 		reset_dir(pip_prefix)
 		body += 'Directory "{}" was reset\n'.format(pip_prefix)
 
-	try:
-		reqs_path = path.join(app_path, 'requirements.txt')
-		body += run('time pip install -r {} --target {} {}'.format(reqs_path, pip_prefix, '--ignore-installed --no-cache-dir' if request.args.get('nocache') == 'true' else ''))
-	except Exception as exc:
-		body += 'Could not time installation:\n{}'.format(exc)
+	reqs_path = path.join(app_path, 'requirements.txt')
+	pip_install_cmd = 'time pip install -r {} --target {} {}'.format(
+		reqs_path, pip_prefix, '--ignore-installed --no-cache-dir' if request.args.get('nocache') == 'true' else '')
+	body += run(pip_install_cmd).output
 
 	return res(body)
 
@@ -63,13 +63,10 @@ def time_npm(reqset):
 	body = ''
 
 	# Install npm if needed
-	if not run('which npm').startswith('/'):
+	if run('which npm').returncode != 0:
 		install_npm_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
 		body += '{}:\n'.format(install_npm_cmd)
-		try:
-			body += run(install_npm_cmd) + '\n\n'
-		except Exception as exc:
-			body += 'Could not instal npm:\n{}'.format(exc)
+		body += run(install_npm_cmd).output + '\n\n'
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	node_modules_path = path.join(app_path, 'node_modules')
@@ -78,11 +75,7 @@ def time_npm(reqset):
 		reset_dir(node_modules_path)
 		body += 'Directory "{}" was reset\n'.format(node_modules_path)
 
-	try:
-		body += run('time npm install', app_path)
-	except Exception as exc:
-		body += 'Could not time installation:\n{}'.format(exc)
-
+	body += run('time npm install', app_path).output
 	return res(body)
 
 
