@@ -2,7 +2,7 @@
 Sample app that run `pip install`/`npm install` in various directories,
 to measure package download performance.
 '''
-from os import path
+from os import path, remove
 from time import sleep
 from flask import Flask, request; app = Flask(__name__)
 from utils import *
@@ -74,6 +74,9 @@ def time_npm(reqset):
 	if request.args.get('reset') == 'true':
 		reset_dir(node_modules_path)
 		body += 'Directory "{}" was reset\n'.format(node_modules_path)
+		pkg_lock_path = path.join(app_path, 'package-lock.json')
+		remove(pkg_lock_path)
+		body += 'File "{}" was deleted\n'.format(pkg_lock_path)
 
 	body += run('time npm install', app_path).output
 	return res(body)
