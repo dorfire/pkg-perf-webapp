@@ -31,4 +31,7 @@ def run(cmd, workdir=None):
 		output = subprocess.check_output(['/bin/bash', '-c', cmd], stderr=subprocess.STDOUT, shell=False, cwd=workdir)
 		return RunResult(0, str(output, DEFAULT_OUTPUT_ENCODING))
 	except subprocess.CalledProcessError as exc:
-		return RunResult(exc.returncode, str(exc.output, DEFAULT_OUTPUT_ENCODING))
+		try:
+			return RunResult(exc.returncode, str(exc.output, DEFAULT_OUTPUT_ENCODING))
+		except:
+			return RunResult(None, None)
