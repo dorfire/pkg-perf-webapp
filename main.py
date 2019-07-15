@@ -58,25 +58,56 @@ def time_pip(reqset):
 	return res(body)
 
 
+def _reset_node_modules_dir(app_path):
+	node_modules_path = path.join(app_path, 'node_modules')
+	reset_dir(node_modules_path)
+	body = 'Directory "{}" was reset\n'.format(node_modules_path)
+	pkg_lock_path = path.join(app_path, 'package-lock.json')
+	remove(pkg_lock_path)
+	body += 'File "{}" was deleted\n'.format(pkg_lock_path)
+	return body
+
+
 @app.route('/npm-install/<reqset>')
 def time_npm(reqset):
 	body = ''
 
 	# Install node + npm if needed
-	if run('which npm').returncode != 0:
+	if not cmd_exists('npm'):
 		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
 		body += '{}:\n'.format(install_node_cmd)
 		body += run(install_node_cmd).output + '\n\n'
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
-	node_modules_path = path.join(app_path, 'node_modules')
+	if request.args.get('reset') == 'true':
+		body += _reset_node_modules_dir(app_path)
+
+	body += run('time npm install', app_path).output
+	return res(body)
+
+
+@app.route('/yarn-install/<reqset>')
+def time_yarn(reqset):
+	body = ''
+
+	# Install node + npm if needed
+	if not cmd_exists('npm'):
+		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
+		body += '{}:\n'.format(install_node_cmd)
+		body += run(install_node_cmd).output + '\n\n'
+
+	# Install yarn if needed
+	if not cmd_exists('yarn'):
+		install_yarn_cmd = 'curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && apt-get update && apt-get install yarn'
+		body += '{}:\n'.format(install_node_cmd)
+		body += run(install_node_cmd).output + '\n\n'
+
+	app_path = path.join(NPM_REQSET_DIR, reqset)
+	# Always reset node_modules for yarn
+	_reset_node_modules_dir(app_path)
 
 	if request.args.get('reset') == 'true':
-		reset_dir(node_modules_path)
-		body += 'Directory "{}" was reset\n'.format(node_modules_path)
-		pkg_lock_path = path.join(app_path, 'package-lock.json')
-		remove(pkg_lock_path)
-		body += 'File "{}" was deleted\n'.format(pkg_lock_path)
+		body += run('yarn cache clean').output + '\n\n'
 
 	body += run('time npm install', app_path).output
 	return res(body)

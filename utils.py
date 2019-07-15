@@ -35,3 +35,7 @@ def run(cmd, workdir=None):
 			return RunResult(exc.returncode, str(exc.output, DEFAULT_OUTPUT_ENCODING))
 		except:
 			return RunResult(None, None)
+
+
+def cmd_exists(cmd):
+	return run('which ' + cmd).returncode == 0
