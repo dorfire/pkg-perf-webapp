@@ -102,11 +102,11 @@ def time_yarn(reqset):
 
 	# Install yarn if needed
 	if not cmd_exists('yarn'):
-		install_yarn_cmd = 'curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && apt-get update && apt-get install yarn'
-		body += 'Installing Yarn:\n'
-		install_yarn_run = run(install_yarn_cmd)
-		assert install_yarn_run.returncode == 0
-		body += install_yarn_run.output + '\n---\n'
+		assert run('curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -').returncode == 0
+		assert run('echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list').returncode == 0
+		apk_run = run('apt-get update && apt-get install yarn')
+		assert apk_run.returncode == 0
+		body += apk_run.output + '\n---\n'
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	# Always reset node_modules for yarn
