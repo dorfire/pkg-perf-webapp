@@ -8,8 +8,8 @@ DEFAULT_OUTPUT_ENCODING = 'utf-8'
 REQSET_EXT = '.txt'
 
 
-def res(body):
-	return Response(body, mimetype='text/plain')
+def res(content, status=None):
+	return Response(content, status=status, mimetype='text/plain')
 
 
 def get_available_reqsets(reqset_dir):

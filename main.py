@@ -116,10 +116,9 @@ def time_yarn(reqset):
 		body += run('yarn cache clean').output + '\n\n'
 
 	yarn_install_run = run('time yarn install', app_path)
-	assert yarn_install_run.returncode == 0
 	body += yarn_install_run.output
 
-	return res(body)
+	return res(body, None if yarn_install_run.returncode == 0 else 500)
 
 
 if __name__ == '__main__':
