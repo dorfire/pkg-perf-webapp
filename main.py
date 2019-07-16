@@ -58,6 +58,12 @@ def time_pip(reqset):
 	return res(body)
 
 
+def _install_npm_if_needed():
+	if not cmd_exists('npm'):
+		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
+		return 'Installing node:\n{}\n\n'.format(run(install_node_cmd).output)
+
+
 def _reset_node_modules_dir(app_path):
 	node_modules_path = path.join(app_path, 'node_modules')
 	reset_dir(node_modules_path)
@@ -75,11 +81,7 @@ def _reset_node_modules_dir(app_path):
 def time_npm(reqset):
 	body = ''
 
-	# Install node + npm if needed
-	if not cmd_exists('npm'):
-		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
-		body += '{}:\n'.format(install_node_cmd)
-		body += run(install_node_cmd).output + '\n\n'
+	_install_npm_if_needed()
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	if request.args.get('reset') == 'true':
@@ -93,11 +95,7 @@ def time_npm(reqset):
 def time_yarn(reqset):
 	body = ''
 
-	# Install node + npm if needed
-	if not cmd_exists('npm'):
-		install_node_cmd = 'curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs'
-		body += '{}:\n'.format(install_node_cmd)
-		body += run(install_node_cmd).output + '\n\n'
+	_install_npm_if_needed()
 
 	# Install yarn if needed
 	if not cmd_exists('yarn'):
