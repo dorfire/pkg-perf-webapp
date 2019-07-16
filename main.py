@@ -112,7 +112,7 @@ def time_yarn(reqset):
 	if request.args.get('reset') == 'true':
 		body += run('yarn cache clean').output + '\n\n'
 
-	body += run('time npm install', app_path).output
+	body += run('time yarn install', app_path).output
 	return res(body)
 
 
