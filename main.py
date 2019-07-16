@@ -115,7 +115,7 @@ def time_yarn(reqset):
 	if request.args.get('reset') == 'true':
 		body += run('yarn cache clean').output + '\n\n'
 
-	yarn_install_run = run('time yarn install', app_path)
+	yarn_install_run = run('time yarn install --cache-folder /tmp', app_path)
 	body += yarn_install_run.output
 
 	return res(body, None if yarn_install_run.returncode == 0 else 500)
