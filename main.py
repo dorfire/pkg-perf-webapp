@@ -64,16 +64,19 @@ def _install_npm_if_needed():
 		return 'Installing node:\n{}\n\n'.format(run(install_node_cmd).output)
 
 
-def _reset_node_modules_dir(app_path):
+def _reset_node_modules_dir(app_path, should_delete_package_lock):
 	node_modules_path = path.join(app_path, 'node_modules')
 	reset_dir(node_modules_path)
 	body = 'Directory "{}" was reset\n'.format(node_modules_path)
 	pkg_lock_path = path.join(app_path, 'package-lock.json')
-	try:
-		remove(pkg_lock_path)
-		body += 'File "{}" was deleted\n'.format(pkg_lock_path)
-	except FileNotFoundError:
-		body += 'File "{}" was NOT deleted\n'.format(pkg_lock_path)
+
+	if should_delete_package_lock:
+		try:
+			remove(pkg_lock_path)
+			body += 'File "{}" was deleted\n'.format(pkg_lock_path)
+		except FileNotFoundError:
+			body += 'File "{}" was NOT deleted\n'.format(pkg_lock_path)
+
 	return body
 
 
@@ -81,7 +84,7 @@ def _reset_node_modules_dir(app_path):
 def time_npm(reqset):
 	body = ''
 
-	_install_npm_if_needed()
+	_install_npm_if_needed(True)
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	if request.args.get('reset') == 'true':
@@ -105,12 +108,15 @@ def time_yarn(reqset):
 
 	app_path = path.join(NPM_REQSET_DIR, reqset)
 	# Always reset node_modules for yarn
-	_reset_node_modules_dir(app_path)
+	_reset_node_modules_dir(app_path, False)
 
 	if request.args.get('reset') == 'true':
 		body += run('yarn cache clean').output + '\n\n'
 
-	body += run('time yarn install', app_path).output
+	yarn_install_run = run('time yarn install', app_path)
+	assert yarn_install_run.returncode == 0
+	body += yarn_install_run.output
+
 	return res(body)
 
 
