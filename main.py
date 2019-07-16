@@ -104,7 +104,7 @@ def time_yarn(reqset):
 	if not cmd_exists('yarn'):
 		assert run('curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -').returncode == 0
 		assert run('echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list').returncode == 0
-		apk_run = run('apt-get update && apt-get install yarn')
+		apk_run = run('apt-get update && apt-get install -y yarn')
 		assert apk_run.returncode == 0
 		body += apk_run.output + '\n---\n'
 
