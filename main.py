@@ -63,8 +63,11 @@ def _reset_node_modules_dir(app_path):
 	reset_dir(node_modules_path)
 	body = 'Directory "{}" was reset\n'.format(node_modules_path)
 	pkg_lock_path = path.join(app_path, 'package-lock.json')
-	remove(pkg_lock_path)
-	body += 'File "{}" was deleted\n'.format(pkg_lock_path)
+	try:
+		remove(pkg_lock_path)
+		body += 'File "{}" was deleted\n'.format(pkg_lock_path)
+	except FileNotFoundError:
+		body += 'File "{}" was NOT deleted\n'.format(pkg_lock_path)
 	return body
 
 
